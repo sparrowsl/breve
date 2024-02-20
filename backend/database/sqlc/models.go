@@ -9,10 +9,10 @@ import (
 )
 
 type Breve struct {
-	ID       int32
-	Redirect string
-	Link     string
-	Clicked  sql.NullInt32
-	Random   sql.NullBool
-	Created  sql.NullTime
+	ID       int32         `json:"id"`
+	Redirect string        `json:"redirect"`
+	Link     string        `json:"link"`
+	Clicked  sql.NullInt32 `json:"clicked"`
+	Random   sql.NullBool  `json:"random"`
+	Created  sql.NullTime  `json:"created"`
 }

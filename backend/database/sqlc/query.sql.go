@@ -15,8 +15,8 @@ INSERT INTO breve(redirect, link) VALUES(?, ?)
 `
 
 type CreateBreveParams struct {
-	Redirect string
-	Link     string
+	Redirect string `json:"redirect"`
+	Link     string `json:"link"`
 }
 
 func (q *Queries) CreateBreve(ctx context.Context, arg CreateBreveParams) (sql.Result, error) {

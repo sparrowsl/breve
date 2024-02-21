@@ -1,35 +1,26 @@
 package main
 
 import (
-	"context"
-	"database/sql"
 	"fmt"
 	"os"
 
-	_ "github.com/go-sql-driver/mysql"
 	"github.com/sparrowsl/breve/config"
-	"github.com/sparrowsl/breve/database/sqlc"
+	"github.com/sparrowsl/breve/models"
+	"gorm.io/driver/mysql"
+	"gorm.io/gorm"
 )
 
 func main() {
-	ctx := context.Background()
 	config := (&config.Config{}).Load()
 
-	db, err := sql.Open("mysql", config.DATABASE_URL)
+	fmt.Println(config.DATABASE_URL)
+	db, err := gorm.Open(mysql.Open(config.DATABASE_URL), &gorm.Config{})
 	if err != nil {
 		fmt.Fprintln(os.Stdin, err)
 		os.Exit(1)
 	}
-	defer db.Close()
 
-	queries := sqlc.New(db)
+	db.AutoMigrate(models.Breve{})
 
-	breves, err := queries.GetBreves(ctx)
-	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
-	}
-
-	fmt.Println(breves)
-	fmt.Println(config.DATABASE_URL)
+	fmt.Println(db)
 }

@@ -1,38 +1,54 @@
 package main
 
 import (
+	"database/sql"
 	"fmt"
 	"net/http"
+	"os"
 
 	_ "breve/internal/config"
 	"breve/internal/database"
 
-	"github.com/go-chi/chi/v5"
-	"github.com/go-chi/chi/v5/middleware"
 	_ "github.com/go-sql-driver/mysql"
 )
 
 type application struct {
-	db *database.Link
+	db    *sql.DB
+	links *database.Link
 }
 
 func main() {
-	app := &application{
-		db: &database.Link{},
+	db, err := openDB(os.Getenv("DATABASE_URL"))
+	if err != nil {
+		fmt.Fprintln(os.Stderr, fmt.Sprintf("Error: %s", err))
+		os.Exit(1)
 	}
 
-	router := chi.NewMux()
-	router.Use(middleware.Logger)
-	router.Use(middleware.Recoverer)
-	router.Get("/", func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("Hello, World!"))
-	})
+	app := &application{
+		db: db,
+	}
 
 	server := &http.Server{
 		Addr:    ":5000",
-		Handler: router,
+		Handler: app.routes(),
 	}
 
-	fmt.Println(app)
-	_ = server.ListenAndServe()
+	fmt.Println("Starting server on :5000")
+	if err := server.ListenAndServe(); err != nil {
+		fmt.Fprintf(os.Stderr, err.Error())
+		os.Exit(1)
+	}
+}
+
+func openDB(dsn string) (*sql.DB, error) {
+	db, err := sql.Open("mysql", dsn)
+	if err != nil {
+		return nil, err
+	}
+
+	if err := db.Ping(); err != nil {
+		return nil, err
+	}
+
+	return db, nil
 }

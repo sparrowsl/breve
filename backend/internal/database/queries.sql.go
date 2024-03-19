@@ -11,18 +11,18 @@ import (
 )
 
 const createLink = `-- name: CreateLink :execresult
-INSERT INTO links (redirect, link, random) 
+INSERT INTO links (redirect, url, random) 
 VALUES (?, ?, ?)
 `
 
 type CreateLinkParams struct {
 	Redirect string       `json:"redirect"`
-	Link     string       `json:"link"`
+	Url      string       `json:"url"`
 	Random   sql.NullBool `json:"random"`
 }
 
 func (q *Queries) CreateLink(ctx context.Context, arg CreateLinkParams) (sql.Result, error) {
-	return q.db.ExecContext(ctx, createLink, arg.Redirect, arg.Link, arg.Random)
+	return q.db.ExecContext(ctx, createLink, arg.Redirect, arg.Url, arg.Random)
 }
 
 const deleteLink = `-- name: DeleteLink :exec
@@ -36,7 +36,7 @@ func (q *Queries) DeleteLink(ctx context.Context, id int32) error {
 }
 
 const getLink = `-- name: GetLink :one
-SELECT id, redirect, link, clicked, random, created_at 
+SELECT id, redirect, url, clicked, random, created_at 
 FROM links
 WHERE id = ? 
 LIMIT 1
@@ -48,7 +48,7 @@ func (q *Queries) GetLink(ctx context.Context, id int32) (Link, error) {
 	err := row.Scan(
 		&i.ID,
 		&i.Redirect,
-		&i.Link,
+		&i.Url,
 		&i.Clicked,
 		&i.Random,
 		&i.CreatedAt,
@@ -57,7 +57,7 @@ func (q *Queries) GetLink(ctx context.Context, id int32) (Link, error) {
 }
 
 const listAllLinks = `-- name: ListAllLinks :many
-SELECT id, redirect, link, clicked, random, created_at 
+SELECT id, redirect, url, clicked, random, created_at 
 FROM links
 ORDER BY created_at
 `
@@ -74,7 +74,7 @@ func (q *Queries) ListAllLinks(ctx context.Context) ([]Link, error) {
 		if err := rows.Scan(
 			&i.ID,
 			&i.Redirect,
-			&i.Link,
+			&i.Url,
 			&i.Clicked,
 			&i.Random,
 			&i.CreatedAt,

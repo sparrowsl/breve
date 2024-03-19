@@ -10,7 +10,7 @@ FROM links
 ORDER BY created_at;
 
 -- name: CreateLink :execresult
-INSERT INTO links (redirect, link, random) 
+INSERT INTO links (redirect, url, random) 
 VALUES (?, ?, ?);
 
 -- name: DeleteLink :exec

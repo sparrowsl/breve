@@ -12,7 +12,7 @@ import (
 type Link struct {
 	ID        int32         `json:"id"`
 	Redirect  string        `json:"redirect"`
-	Link      string        `json:"link"`
+	Url       string        `json:"url"`
 	Clicked   sql.NullInt32 `json:"clicked"`
 	Random    sql.NullBool  `json:"random"`
 	CreatedAt time.Time     `json:"created_at"`

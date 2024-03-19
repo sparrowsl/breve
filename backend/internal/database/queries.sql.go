@@ -16,9 +16,9 @@ VALUES (?, ?, ?)
 `
 
 type CreateLinkParams struct {
-	Redirect string       `json:"redirect"`
-	Url      string       `json:"url"`
-	Random   sql.NullBool `json:"random"`
+	Redirect string `json:"redirect"`
+	Url      string `json:"url"`
+	Random   bool   `json:"random"`
 }
 
 func (q *Queries) CreateLink(ctx context.Context, arg CreateLinkParams) (sql.Result, error) {

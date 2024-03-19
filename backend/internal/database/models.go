@@ -5,15 +5,14 @@
 package database
 
 import (
-	"database/sql"
 	"time"
 )
 
 type Link struct {
-	ID        int32         `json:"id"`
-	Redirect  string        `json:"redirect"`
-	Url       string        `json:"url"`
-	Clicked   sql.NullInt32 `json:"clicked"`
-	Random    sql.NullBool  `json:"random"`
-	CreatedAt time.Time     `json:"created_at"`
+	ID        int32     `json:"id"`
+	Redirect  string    `json:"redirect"`
+	Url       string    `json:"url"`
+	Clicked   int32     `json:"clicked"`
+	Random    bool      `json:"random"`
+	CreatedAt time.Time `json:"created_at"`
 }

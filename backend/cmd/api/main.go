@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"database/sql"
 	"fmt"
 	"net/http"
@@ -13,8 +14,9 @@ import (
 )
 
 type application struct {
-	db    *sql.DB
+	db    *database.Queries
 	links *database.Link
+	ctx   context.Context
 }
 
 func main() {
@@ -23,9 +25,12 @@ func main() {
 		fmt.Fprintln(os.Stderr, fmt.Sprintf("Error: %s", err))
 		os.Exit(1)
 	}
+	defer db.Close()
 
+	queries := database.New(db)
 	app := &application{
-		db: db,
+		db:  queries,
+		ctx: context.Background(),
 	}
 
 	server := &http.Server{

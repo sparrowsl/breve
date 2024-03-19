@@ -17,12 +17,11 @@ func (app *application) routes() http.Handler {
 
 	router.Use(cors.Handler(cors.Options{
 		AllowedMethods: []string{"GET", "POST", "PATCH", "DELETE"},
-		// AllowedHeaders: []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
 	}))
 
-	router.Get("/", func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("Hello, World!"))
-	})
+	router.Get("/links", app.getLinks)
+	router.Get("/links/{id}", app.getLink)
+	router.Delete("/links/{id}", app.deleteLink)
 
 	return router
 }

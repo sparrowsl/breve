@@ -12,4 +12,6 @@ func init() {
 		fmt.Fprintln(os.Stdin, err)
 		os.Exit(1)
 	}
+
+	// do extra check to make sure there's is value in the env file
 }

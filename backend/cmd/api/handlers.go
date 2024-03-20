@@ -1,6 +1,7 @@
 package main
 
 import (
+	"breve/internal/database"
 	"database/sql"
 	"encoding/json"
 	"errors"
@@ -52,6 +53,36 @@ func (app *application) getLink(writer http.ResponseWriter, request *http.Reques
 
 	writer.Header().Set("Content-Type", "application/json")
 	writer.Write(value)
+}
+
+func (app *application) createLink(writer http.ResponseWriter, request *http.Request) {
+	var input struct {
+		Redirect string `json:"redirect"`
+		Url      string `json:"url"`
+		Random   bool   `json:"random"`
+	}
+
+	// get the request body then print it.
+	decoder := json.NewDecoder(request.Body)
+	decoder.DisallowUnknownFields()
+
+	if err := decoder.Decode(&input); err != nil {
+		fmt.Fprintf(writer, "Error: %s\n", err)
+		return
+	}
+
+	result, err := app.db.CreateLink(app.ctx, database.CreateLinkParams{
+		Redirect: input.Redirect,
+		Url:      input.Url,
+		Random:   input.Random,
+	})
+	if err != nil {
+		fmt.Fprintf(writer, "Error: %s\n", err)
+		return
+	}
+
+	writer.Header().Set("Content-Type", "application/json")
+	writer.Write([]byte(fmt.Sprintf("%+v\n", result)))
 }
 
 func (app *application) deleteLink(writer http.ResponseWriter, request *http.Request) {

@@ -9,7 +9,7 @@ SELECT *
 FROM links
 ORDER BY created_at;
 
--- name: CreateLink :execresult
+-- name: CreateLink :exec
 INSERT INTO links (redirect, url, random) 
 VALUES (?, ?, ?);
 

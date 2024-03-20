@@ -2,14 +2,16 @@ package main
 
 import (
 	"context"
+	"database/sql"
 	"fmt"
+	"log"
 	"net/http"
 	"os"
 
 	_ "breve/internal/config"
 	"breve/internal/database"
 
-	"github.com/jackc/pgx/v5"
+	_ "github.com/lib/pq"
 )
 
 type application struct {
@@ -24,11 +26,11 @@ func main() {
 		fmt.Fprintln(os.Stderr, fmt.Sprintf("Error: %s", err))
 		os.Exit(1)
 	}
-	defer conn.Close(context.Background())
+	defer conn.Close()
 
-	// queries := database.New(conn)
+	queries := database.New(conn)
 	app := &application{
-		// db:  queries,
+		db:  queries,
 		ctx: context.Background(),
 	}
 
@@ -44,14 +46,14 @@ func main() {
 	}
 }
 
-func openDB(dsn string) (*pgx.Conn, error) {
-	db, err := pgx.Connect(context.Background(), dsn)
+func openDB(dsn string) (*sql.DB, error) {
+	db, err := sql.Open("postgres", dsn)
 	if err != nil {
 		return nil, err
 	}
 
-	if err := db.Ping(context.Background()); err != nil {
-		return nil, err
+	if err := db.Ping(); err != nil {
+		log.Fatal(err)
 	}
 
 	return db, nil

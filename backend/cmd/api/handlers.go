@@ -84,7 +84,7 @@ func (app *application) createLink(writer http.ResponseWriter, request *http.Req
 		return
 	}
 
-	result, err := app.db.CreateLink(app.ctx, database.CreateLinkParams{
+	link, err := app.db.CreateLink(app.ctx, database.CreateLinkParams{
 		Redirect: input.Redirect,
 		Url:      input.Url,
 		Random:   input.Random,
@@ -95,7 +95,7 @@ func (app *application) createLink(writer http.ResponseWriter, request *http.Req
 	}
 
 	writer.Header().Set("Content-Type", "application/json")
-	writer.Write([]byte(fmt.Sprintf("%+v\n", result)))
+	writer.Write([]byte(fmt.Sprintf("%+v\n", link)))
 }
 
 func (app *application) deleteLink(writer http.ResponseWriter, request *http.Request) {

@@ -9,14 +9,30 @@ import (
 	"context"
 )
 
-const createLink = `-- name: CreateLink :exec
+const createLink = `-- name: CreateLink :one
 INSERT INTO links (redirect, url, random) 
 VALUES ($1, $2, $3)
+RETURNING id, redirect, url, clicked, random, created_at
 `
 
-func (q *Queries) CreateLink(ctx context.Context) error {
-	_, err := q.db.ExecContext(ctx, createLink)
-	return err
+type CreateLinkParams struct {
+	Redirect string `json:"redirect"`
+	Url      string `json:"url"`
+	Random   bool   `json:"random"`
+}
+
+func (q *Queries) CreateLink(ctx context.Context, arg CreateLinkParams) (Link, error) {
+	row := q.db.QueryRowContext(ctx, createLink, arg.Redirect, arg.Url, arg.Random)
+	var i Link
+	err := row.Scan(
+		&i.ID,
+		&i.Redirect,
+		&i.Url,
+		&i.Clicked,
+		&i.Random,
+		&i.CreatedAt,
+	)
+	return i, err
 }
 
 const deleteLink = `-- name: DeleteLink :exec
@@ -24,8 +40,8 @@ DELETE FROM links
 WHERE id = $1
 `
 
-func (q *Queries) DeleteLink(ctx context.Context) error {
-	_, err := q.db.ExecContext(ctx, deleteLink)
+func (q *Queries) DeleteLink(ctx context.Context, id int32) error {
+	_, err := q.db.ExecContext(ctx, deleteLink, id)
 	return err
 }
 
@@ -36,8 +52,8 @@ WHERE id = $1
 LIMIT 1
 `
 
-func (q *Queries) GetLink(ctx context.Context) (Link, error) {
-	row := q.db.QueryRowContext(ctx, getLink)
+func (q *Queries) GetLink(ctx context.Context, id int32) (Link, error) {
+	row := q.db.QueryRowContext(ctx, getLink, id)
 	var i Link
 	err := row.Scan(
 		&i.ID,
@@ -86,16 +102,38 @@ func (q *Queries) ListAllLinks(ctx context.Context) ([]Link, error) {
 	return items, nil
 }
 
-const updateLink = `-- name: UpdateLink :exec
+const updateLink = `-- name: UpdateLink :one
 UPDATE links 
 SET 
   url = $1,
   redirect = $2,
   random = $3
 WHERE id = $4
+RETURNING id, redirect, url, clicked, random, created_at
 `
 
-func (q *Queries) UpdateLink(ctx context.Context) error {
-	_, err := q.db.ExecContext(ctx, updateLink)
-	return err
+type UpdateLinkParams struct {
+	Url      string `json:"url"`
+	Redirect string `json:"redirect"`
+	Random   bool   `json:"random"`
+	ID       int32  `json:"id"`
+}
+
+func (q *Queries) UpdateLink(ctx context.Context, arg UpdateLinkParams) (Link, error) {
+	row := q.db.QueryRowContext(ctx, updateLink,
+		arg.Url,
+		arg.Redirect,
+		arg.Random,
+		arg.ID,
+	)
+	var i Link
+	err := row.Scan(
+		&i.ID,
+		&i.Redirect,
+		&i.Url,
+		&i.Clicked,
+		&i.Random,
+		&i.CreatedAt,
+	)
+	return i, err
 }

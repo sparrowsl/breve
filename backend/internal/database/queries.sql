@@ -9,18 +9,19 @@ SELECT *
 FROM links
 ORDER BY created_at;
 
--- name: CreateLink :exec
+-- name: CreateLink :one
 INSERT INTO links (redirect, url, random) 
-VALUES ($1, $2, $3);
+VALUES ($1, $2, $3)
+RETURNING *;
 
-
--- name: UpdateLink :exec
+-- name: UpdateLink :one
 UPDATE links 
 SET 
   url = $1,
   redirect = $2,
   random = $3
-WHERE id = $4;
+WHERE id = $4
+RETURNING *;
 
 -- name: DeleteLink :exec
 DELETE FROM links

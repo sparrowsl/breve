@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/cohesivestack/valgo"
 	"github.com/go-chi/chi/v5"
 )
 
@@ -62,12 +63,24 @@ func (app *application) createLink(writer http.ResponseWriter, request *http.Req
 		Random   bool   `json:"random"`
 	}
 
-	// get the request body then print it.
 	decoder := json.NewDecoder(request.Body)
 	decoder.DisallowUnknownFields()
 
 	if err := decoder.Decode(&input); err != nil {
-		fmt.Fprintf(writer, "Error: %s\n", err)
+		http.Error(writer, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	// validate the request body.
+	validator := valgo.
+		Is(valgo.String(input.Redirect, "redirect").Not().Blank()).
+		Is(valgo.String(input.Url, "url").Not().Blank()).
+		Is(valgo.Bool(input.Random, "random").InSlice([]bool{true, false}))
+
+	if !validator.Valid() {
+		out, _ := json.MarshalIndent(validator.Error(), "", "  ")
+		writer.Header().Set("Content-Type", "application/json")
+		writer.Write(out)
 		return
 	}
 

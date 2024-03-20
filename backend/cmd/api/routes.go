@@ -13,6 +13,7 @@ func (app *application) routes() http.Handler {
 
 	router.Use(middleware.Logger)
 	router.Use(middleware.Recoverer)
+	router.Use(middleware.CleanPath)
 	router.Use(middleware.StripSlashes)
 
 	router.Use(cors.Handler(cors.Options{

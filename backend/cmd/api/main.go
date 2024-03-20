@@ -30,7 +30,7 @@ func main() {
 
 	queries := database.New(conn)
 	app := &application{
-		db:  queries,
+		db: queries,
 		ctx: context.Background(),
 	}
 
@@ -39,7 +39,7 @@ func main() {
 		Handler: app.routes(),
 	}
 
-	fmt.Println("Starting server on :5000")
+	fmt.Printf("Starting server on :%s\n", server.Addr)
 	if err := server.ListenAndServe(); err != nil {
 		fmt.Fprintf(os.Stderr, err.Error())
 		os.Exit(1)

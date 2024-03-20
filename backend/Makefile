@@ -7,7 +7,7 @@ generate:
 	@sqlc generate
 
 migrateup:
-	@goose -dir="./internal/migrations/" mysql ${DATABASE_URL} up
+	@goose -dir="./internal/migrations/" postgres ${DATABASE_URL} up
 	
 migratedown:
-	@goose -dir="./internal/migrations/" mysql ${DATABASE_URL} down
+	@goose -dir="./internal/migrations/" postgres ${DATABASE_URL} down

@@ -9,7 +9,7 @@ import (
 )
 
 type Link struct {
-	ID        int32     `json:"id"`
+	ID        uint64    `json:"id"`
 	Redirect  string    `json:"redirect"`
 	Url       string    `json:"url"`
 	Clicked   int32     `json:"clicked"`

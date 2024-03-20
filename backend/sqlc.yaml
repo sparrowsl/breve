@@ -11,4 +11,3 @@ sql:
         emit_empty_slices: true
         json_tags_id_uppercase: true
         json_tags_case_style: "snake"
-        emit_prepared_queries: true

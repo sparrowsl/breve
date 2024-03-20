@@ -7,43 +7,37 @@ package database
 
 import (
 	"context"
-	"database/sql"
 )
 
-const createLink = `-- name: CreateLink :execresult
+const createLink = `-- name: CreateLink :exec
 INSERT INTO links (redirect, url, random) 
-VALUES (?, ?, ?)
+VALUES ($1, $2, $3)
 `
 
-type CreateLinkParams struct {
-	Redirect string `json:"redirect"`
-	Url      string `json:"url"`
-	Random   bool   `json:"random"`
-}
-
-func (q *Queries) CreateLink(ctx context.Context, arg CreateLinkParams) (sql.Result, error) {
-	return q.db.ExecContext(ctx, createLink, arg.Redirect, arg.Url, arg.Random)
+func (q *Queries) CreateLink(ctx context.Context) error {
+	_, err := q.db.ExecContext(ctx, createLink)
+	return err
 }
 
 const deleteLink = `-- name: DeleteLink :exec
 DELETE FROM links
-WHERE id = ?
+WHERE id = $1
 `
 
-func (q *Queries) DeleteLink(ctx context.Context, id int32) error {
-	_, err := q.db.ExecContext(ctx, deleteLink, id)
+func (q *Queries) DeleteLink(ctx context.Context) error {
+	_, err := q.db.ExecContext(ctx, deleteLink)
 	return err
 }
 
 const getLink = `-- name: GetLink :one
 SELECT id, redirect, url, clicked, random, created_at 
 FROM links
-WHERE id = ? 
+WHERE id = $1 
 LIMIT 1
 `
 
-func (q *Queries) GetLink(ctx context.Context, id int32) (Link, error) {
-	row := q.db.QueryRowContext(ctx, getLink, id)
+func (q *Queries) GetLink(ctx context.Context) (Link, error) {
+	row := q.db.QueryRowContext(ctx, getLink)
 	var i Link
 	err := row.Scan(
 		&i.ID,
@@ -90,4 +84,18 @@ func (q *Queries) ListAllLinks(ctx context.Context) ([]Link, error) {
 		return nil, err
 	}
 	return items, nil
+}
+
+const updateLink = `-- name: UpdateLink :exec
+UPDATE links 
+SET 
+  url = $1,
+  redirect = $2,
+  random = $3
+WHERE id = $4
+`
+
+func (q *Queries) UpdateLink(ctx context.Context) error {
+	_, err := q.db.ExecContext(ctx, updateLink)
+	return err
 }

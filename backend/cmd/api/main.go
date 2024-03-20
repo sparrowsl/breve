@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"database/sql"
 	"fmt"
 	"net/http"
 	"os"
@@ -10,7 +9,7 @@ import (
 	_ "breve/internal/config"
 	"breve/internal/database"
 
-	_ "github.com/go-sql-driver/mysql"
+	"github.com/jackc/pgx/v5"
 )
 
 type application struct {
@@ -20,16 +19,16 @@ type application struct {
 }
 
 func main() {
-	db, err := openDB(os.Getenv("DATABASE_URL"))
+	conn, err := openDB(os.Getenv("DATABASE_URL"))
 	if err != nil {
 		fmt.Fprintln(os.Stderr, fmt.Sprintf("Error: %s", err))
 		os.Exit(1)
 	}
-	defer db.Close()
+	defer conn.Close(context.Background())
 
-	queries := database.New(db)
+	// queries := database.New(conn)
 	app := &application{
-		db:  queries,
+		// db:  queries,
 		ctx: context.Background(),
 	}
 
@@ -45,13 +44,13 @@ func main() {
 	}
 }
 
-func openDB(dsn string) (*sql.DB, error) {
-	db, err := sql.Open("mysql", dsn)
+func openDB(dsn string) (*pgx.Conn, error) {
+	db, err := pgx.Connect(context.Background(), dsn)
 	if err != nil {
 		return nil, err
 	}
 
-	if err := db.Ping(); err != nil {
+	if err := db.Ping(context.Background()); err != nil {
 		return nil, err
 	}
 

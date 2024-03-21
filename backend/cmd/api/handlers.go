@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"breve/internal/database"
 	"breve/internal/utils"
@@ -81,7 +82,7 @@ func (app *application) createLink(writer http.ResponseWriter, request *http.Req
 		Is(valgo.Bool(input.Random, "random").InSlice([]bool{true, false}))
 
 		// generate random url with a size/length if request body random is set to true
-	if input.Random {
+	if input.Random || strings.TrimSpace(input.Url) == "" {
 		input.Url = utils.RandomURL(6)
 	}
 

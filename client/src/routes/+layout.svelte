@@ -7,4 +7,6 @@
   <title>Breve</title>
 </svelte:head>
 
-<slot />
+<main class="font-roboto container">
+  <slot />
+</main>

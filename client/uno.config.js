@@ -20,12 +20,12 @@ export default defineConfig({
     presetUno(),
     presetWebFonts({
       fonts: {
-        ptsans: "PT Sans",
+        roboto: "Roboto",
         raleway: "Raleway",
       },
     }),
   ],
   extractors: [extractorSvelte()],
   transformers: [transformerVariantGroup()],
-  shortcuts: { "container": "max-w-2xl mx-auto" },
+  shortcuts: { container: "max-w-2xl mx-auto" },
 });

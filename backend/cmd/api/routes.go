@@ -17,6 +17,8 @@ func (app *application) routes() http.Handler {
 	router.Use(middleware.StripSlashes)
 
 	router.Use(cors.Handler(cors.Options{
+		AllowedOrigins: []string{"*"},
+		AllowedHeaders: []string{"Origin", "Content-Type", "Accept"},
 		AllowedMethods: []string{"GET", "POST", "PATCH", "DELETE"},
 	}))
 

@@ -21,16 +21,16 @@ type application struct {
 }
 
 func main() {
-	conn, err := openDB(os.Getenv("DATABASE_URL"))
+	db, err := openDB(os.Getenv("DATABASE_URL"))
 	if err != nil {
 		fmt.Fprintln(os.Stderr, fmt.Sprintf("Error: %s", err))
 		os.Exit(1)
 	}
-	defer conn.Close()
+	defer db.Close()
 
-	queries := database.New(conn)
+	queries := database.New(db)
 	app := &application{
-		db: queries,
+		db:  queries,
 		ctx: context.Background(),
 	}
 

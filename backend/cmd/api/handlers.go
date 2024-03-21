@@ -134,9 +134,7 @@ func (app *application) deleteLink(writer http.ResponseWriter, request *http.Req
 
 func (app *application) redirectTo(writer http.ResponseWriter, request *http.Request) {
 	// get the redirect url from url param.
-	fmt.Println("Hello World")
 	redirectURL := chi.URLParam(request, "redirect")
-	fmt.Println(redirectURL)
 
 	// fetch the link from database, checking if it exists
 	link, err := app.db.GetLinkByURL(app.ctx, redirectURL)

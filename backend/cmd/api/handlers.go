@@ -1,13 +1,15 @@
 package main
 
 import (
-	"breve/internal/database"
 	"database/sql"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"net/http"
 	"strconv"
+
+	"breve/internal/database"
+	"breve/internal/utils"
 
 	"github.com/cohesivestack/valgo"
 	"github.com/go-chi/chi/v5"
@@ -40,7 +42,8 @@ func (app *application) getLink(writer http.ResponseWriter, request *http.Reques
 	link, err := app.db.GetLink(app.ctx, int32(id))
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			fmt.Fprintf(writer, "Error: No data found...")
+			writer.WriteHeader(http.StatusNotFound)
+			fmt.Fprintf(writer, "Error: no link with that id")
 		}
 
 		return
@@ -74,8 +77,13 @@ func (app *application) createLink(writer http.ResponseWriter, request *http.Req
 	// validate the request body.
 	validator := valgo.
 		Is(valgo.String(input.Redirect, "redirect").Not().Blank()).
-		Is(valgo.String(input.Url, "url").Not().Blank()).
+		Is(valgo.String(input.Url, "url")).
 		Is(valgo.Bool(input.Random, "random").InSlice([]bool{true, false}))
+
+		// generate random url with a size/length if request body random is set to true
+	if input.Random {
+		input.Url = utils.RandomURL(6)
+	}
 
 	if !validator.Valid() {
 		out, _ := json.MarshalIndent(validator.Error(), "", "  ")
@@ -94,8 +102,16 @@ func (app *application) createLink(writer http.ResponseWriter, request *http.Req
 		return
 	}
 
+	// convert to json and return to user
+	value, err := json.MarshalIndent(link, "", "  ")
+	if err != nil {
+		writer.Header().Set("Content-Type", "application/json")
+		writer.Write([]byte(err.Error()))
+		return
+	}
+
 	writer.Header().Set("Content-Type", "application/json")
-	writer.Write([]byte(fmt.Sprintf("%+v\n", link)))
+	writer.Write(value)
 }
 
 func (app *application) deleteLink(writer http.ResponseWriter, request *http.Request) {

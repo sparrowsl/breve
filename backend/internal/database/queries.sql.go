@@ -67,23 +67,21 @@ func (q *Queries) GetLink(ctx context.Context, id int32) (Link, error) {
 }
 
 const getLinkByURL = `-- name: GetLinkByURL :one
-SELECT id, redirect, url, clicked, random, created_at 
+SELECT id, redirect 
 FROM links
 WHERE url = $1 
 LIMIT 1
 `
 
-func (q *Queries) GetLinkByURL(ctx context.Context, url string) (Link, error) {
+type GetLinkByURLRow struct {
+	ID       int32  `json:"id"`
+	Redirect string `json:"redirect"`
+}
+
+func (q *Queries) GetLinkByURL(ctx context.Context, url string) (GetLinkByURLRow, error) {
 	row := q.db.QueryRowContext(ctx, getLinkByURL, url)
-	var i Link
-	err := row.Scan(
-		&i.ID,
-		&i.Redirect,
-		&i.Url,
-		&i.Clicked,
-		&i.Random,
-		&i.CreatedAt,
-	)
+	var i GetLinkByURLRow
+	err := row.Scan(&i.ID, &i.Redirect)
 	return i, err
 }
 
@@ -121,6 +119,17 @@ func (q *Queries) ListAllLinks(ctx context.Context) ([]Link, error) {
 		return nil, err
 	}
 	return items, nil
+}
+
+const updateClickedCount = `-- name: UpdateClickedCount :exec
+UPDATE links
+SET clicked = clicked + 1
+WHERE id = $1
+`
+
+func (q *Queries) UpdateClickedCount(ctx context.Context, id int32) error {
+	_, err := q.db.ExecContext(ctx, updateClickedCount, id)
+	return err
 }
 
 const updateLink = `-- name: UpdateLink :one

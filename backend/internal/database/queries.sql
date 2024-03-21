@@ -5,7 +5,7 @@ WHERE id = $1
 LIMIT 1;
 
 -- name: GetLinkByURL :one
-SELECT * 
+SELECT id, redirect 
 FROM links
 WHERE url = $1 
 LIMIT 1;
@@ -19,6 +19,11 @@ ORDER BY created_at;
 INSERT INTO links (redirect, url, random) 
 VALUES ($1, $2, $3)
 RETURNING *;
+
+-- name: UpdateClickedCount :exec
+UPDATE links
+SET clicked = clicked + 1
+WHERE id = $1;
 
 -- name: UpdateLink :one
 UPDATE links 

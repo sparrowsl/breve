@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"log/slog"
 	"net/http"
 	"strconv"
 	"strings"
@@ -153,6 +154,11 @@ func (app *application) redirectTo(writer http.ResponseWriter, request *http.Req
 		return
 	}
 
+	// Update the clicked count of current link.
+	if err := app.db.UpdateClickedCount(app.ctx, link.ID); err != nil {
+		slog.Info(err.Error())
+	}
+
 	// redirect to the url from link
-	http.Redirect(writer, request, link.Redirect, http.StatusMovedPermanently)
+	http.Redirect(writer, request, link.Redirect, http.StatusTemporaryRedirect)
 }

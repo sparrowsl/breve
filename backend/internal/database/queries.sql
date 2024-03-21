@@ -4,6 +4,12 @@ FROM links
 WHERE id = $1 
 LIMIT 1;
 
+-- name: GetLinkByURL :one
+SELECT * 
+FROM links
+WHERE url = $1 
+LIMIT 1;
+
 -- name: ListAllLinks :many
 SELECT * 
 FROM links

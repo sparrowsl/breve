@@ -23,7 +23,7 @@ func (app *application) getLinks(writer http.ResponseWriter, request *http.Reque
 		return
 	}
 
-	value, err := json.MarshalIndent(map[string]any{"links": links}, "", "  ")
+	value, err := json.Marshal(map[string]any{"links": links})
 	if err != nil {
 		writer.Write([]byte("An error while parsing JSON body"))
 		return
@@ -50,7 +50,7 @@ func (app *application) getLink(writer http.ResponseWriter, request *http.Reques
 		return
 	}
 
-	value, err := json.MarshalIndent(map[string]any{"link": link}, "", "  ")
+	value, err := json.Marshal(map[string]any{"link": link})
 	if err != nil {
 		writer.Write([]byte("An error while parsing JSON body"))
 		return
@@ -87,7 +87,7 @@ func (app *application) createLink(writer http.ResponseWriter, request *http.Req
 	}
 
 	if !validator.Valid() {
-		out, _ := json.MarshalIndent(validator.Error(), "", "  ")
+		out, _ := json.Marshal(validator.Error())
 		writer.Header().Set("Content-Type", "application/json")
 		writer.Write(out)
 		return
@@ -104,7 +104,7 @@ func (app *application) createLink(writer http.ResponseWriter, request *http.Req
 	}
 
 	// convert to json and return to user
-	value, err := json.MarshalIndent(link, "", "  ")
+	value, err := json.Marshal(link)
 	if err != nil {
 		writer.Header().Set("Content-Type", "application/json")
 		writer.Write([]byte(err.Error()))
@@ -129,4 +129,30 @@ func (app *application) deleteLink(writer http.ResponseWriter, request *http.Req
 
 	writer.Header().Set("Content-Type", "application/json")
 	writer.WriteHeader(http.StatusNoContent)
+}
+
+func (app *application) redirectTo(writer http.ResponseWriter, request *http.Request) {
+	// get the redirect url from url param.
+	fmt.Println("Hello World")
+	redirectURL := chi.URLParam(request, "redirect")
+	fmt.Println(redirectURL)
+
+	// fetch the link from database, checking if it exists
+	link, err := app.db.GetLinkByURL(app.ctx, redirectURL)
+	if err != nil {
+		writer.WriteHeader(http.StatusNotFound)
+		writer.Header().Set("Content-Type", "application/json")
+
+		if errors.Is(err, sql.ErrNoRows) {
+			out, _ := json.Marshal(map[string]any{"message": err.Error()})
+			writer.Write(out)
+			return
+		}
+
+		writer.Write([]byte(err.Error()))
+		return
+	}
+
+	// redirect to the url from link
+	http.Redirect(writer, request, link.Redirect, http.StatusMovedPermanently)
 }

@@ -66,6 +66,27 @@ func (q *Queries) GetLink(ctx context.Context, id int32) (Link, error) {
 	return i, err
 }
 
+const getLinkByURL = `-- name: GetLinkByURL :one
+SELECT id, redirect, url, clicked, random, created_at 
+FROM links
+WHERE url = $1 
+LIMIT 1
+`
+
+func (q *Queries) GetLinkByURL(ctx context.Context, url string) (Link, error) {
+	row := q.db.QueryRowContext(ctx, getLinkByURL, url)
+	var i Link
+	err := row.Scan(
+		&i.ID,
+		&i.Redirect,
+		&i.Url,
+		&i.Clicked,
+		&i.Random,
+		&i.CreatedAt,
+	)
+	return i, err
+}
+
 const listAllLinks = `-- name: ListAllLinks :many
 SELECT id, redirect, url, clicked, random, created_at 
 FROM links

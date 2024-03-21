@@ -22,6 +22,7 @@ func (app *application) routes() http.Handler {
 		AllowedMethods: []string{"GET", "POST", "PATCH", "DELETE"},
 	}))
 
+	router.Get("/links/r/{redirect}", app.redirectTo)
 	router.Get("/links", app.getLinks)
 	router.Get("/links/{id}", app.getLink)
 	router.Post("/links", app.createLink)

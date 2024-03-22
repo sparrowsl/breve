@@ -1,5 +1,5 @@
 <script>
-  let { link } = $props();
+  const { link } = $props();
 </script>
 
 <div class="rounded-md border-2 p-4 max-w-md">

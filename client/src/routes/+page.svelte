@@ -1,7 +1,7 @@
 <script>
   import Card from "./Card.svelte";
 
-  let { data } = $props();
+  const { data } = $props();
 </script>
 
 <h1 class="font-bold text-2xl py-5">Breve - URL Shortner in Go and Svelte</h1>

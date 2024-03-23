@@ -1,4 +1,4 @@
-// import { presetForms } from "@julr/unocss-preset-forms";
+import { presetForms } from "@julr/unocss-preset-forms";
 import extractorSvelte from "@unocss/extractor-svelte";
 import {
   defineConfig,
@@ -10,7 +10,7 @@ import {
 
 export default defineConfig({
   presets: [
-    // presetForms(),
+    presetForms(),
     presetIcons({
       extraProperties: {
         display: "inline-block",

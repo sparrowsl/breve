@@ -29,7 +29,11 @@
     <p>Clicked: {link?.clicked}</p>
   </div>
   <div class="flex items-center mt-5 text-sm text-white font-bold gap-6">
-    <a href="{PUBLIC_API_URL}/links/r/{link?.url}" class="block mr-auto">
+    <a
+      href="{PUBLIC_API_URL}/links/r/{link?.url}"
+      target="_blank"
+      class="block mr-auto"
+    >
       <i class="gg-link text-black"></i>
     </a>
     <button class="block bg-teal-600 px-4 py-1 rounded-md">Update</button>

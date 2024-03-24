@@ -1,12 +1,27 @@
 <script>
-  const link = {
-    redirect: "",
-    url: "",
-    random: false,
-  };
+  import { goto } from "$app/navigation";
+  import { PUBLIC_API_URL } from "$env/static/public";
+
+  const link = { redirect: "", url: "", random: false };
+
+  /** @param {Event} e  */
+  async function submitForm(e) {
+    e.preventDefault();
+
+    const res = await fetch(`${PUBLIC_API_URL}/links`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(link),
+    });
+    // const data = await res.json();
+
+    if (res.ok) {
+      goto("/");
+    }
+  }
 </script>
 
-<form action="">
+<form action="" onsubmit={submitForm} method="POST">
   <legend>Create Link</legend>
 
   <fieldset class="grid gap-5">
@@ -15,25 +30,25 @@
       placeholder="Redirect to"
       name="redirect"
       bind:value={link.redirect}
-      class="block"
+      class="block rounded-md text-sm"
     />
     <input
       type="text"
       placeholder="custom name"
       name="url"
       bind:value={link.url}
-      class="block"
+      class="block rounded-md text-sm"
     />
-    <label for="random" class="flex items-center gap-2">
+    <label for="random" class="flex items-center gap-2 block w-fit">
       <input
         type="checkbox"
         name="random"
         id="random"
         bind:checked={link.random}
+        class="rounded"
       />
       <span>Generate Random</span>
     </label>
-    <p>{link.random}</p>
 
     <button
       type="submit"

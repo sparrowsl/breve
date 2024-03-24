@@ -36,7 +36,10 @@
     >
       <i class="gg-link text-black"></i>
     </a>
-    <button class="block bg-teal-600 px-4 py-1 rounded-md">Update</button>
+    <a
+      href="/create?update={link?.id}"
+      class="block bg-teal-600 px-4 py-1 rounded-md">Update</a
+    >
     <button
       class="block bg-red-500 px-4 py-1 rounded-md"
       onclick={() => deleteLink(link?.id)}>Delete</button

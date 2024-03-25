@@ -43,8 +43,8 @@
     }
   }
 
-  export let data;
-  $: link = data?.link;
+  const { data } = $props();
+  const link = $derived(data.link);
 </script>
 
 <form action="" onsubmit={submitForm} method="POST">
@@ -64,7 +64,7 @@
       name="url"
       disabled={link.random}
       bind:value={link.url}
-      class="block rounded-md text-sm disabled:cursor-not-allowed"
+      class="block rounded-md text-sm disabled:(cursor-not-allowed bg-gray-50)"
     />
     <label for="random" class="flex items-center gap-2 block w-fit">
       <input

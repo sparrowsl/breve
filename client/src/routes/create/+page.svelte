@@ -22,17 +22,20 @@
   async function updateForm(e) {
     e.preventDefault();
 
-    // const res = await fetch(`${PUBLIC_API_URL}/links/${link?.id}`, {
-    //   method: "PATCH",
-    //   headers: { "Content-Type": "application/json" },
-    //   // body: JSON.stringify(link),
-    // });
+    const res = await fetch(`${PUBLIC_API_URL}/links/${link?.id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        url: link.url,
+        redirect: link.redirect,
+        random: link.random,
+      }),
+    });
     // const data = await res.json();
 
-    console.log(link);
-    // if (res.ok) {
-    //   goto("/");
-    // }
+    if (res.ok) {
+      goto("/");
+    }
   }
 
   const { data } = $props();

@@ -133,7 +133,9 @@ func (app *application) updateLink(writer http.ResponseWriter, request *http.Req
 	decoder.DisallowUnknownFields()
 
 	if err := decoder.Decode(&input); err != nil {
-		http.Error(writer, err.Error(), http.StatusBadRequest)
+		out, _ := json.Marshal(err.Error())
+		writer.Header().Set("Content-Type", "application/json")
+		writer.Write(out)
 		return
 	}
 

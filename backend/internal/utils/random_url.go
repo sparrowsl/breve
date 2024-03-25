@@ -6,7 +6,7 @@ var randomRunes = []rune("0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQR
 
 func RandomURL(length ...int) string {
 	if len(length) <= 0 || len(length) > 1 {
-		length[0] = 8
+		length = []int{8}
 	}
 
 	str := make([]rune, length[0])

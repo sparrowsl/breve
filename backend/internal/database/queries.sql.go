@@ -88,7 +88,7 @@ func (q *Queries) GetLinkByURL(ctx context.Context, url string) (GetLinkByURLRow
 const listAllLinks = `-- name: ListAllLinks :many
 SELECT id, redirect, url, clicked, random, created_at 
 FROM links
-ORDER BY created_at
+ORDER BY created_at DESC
 `
 
 func (q *Queries) ListAllLinks(ctx context.Context) ([]Link, error) {

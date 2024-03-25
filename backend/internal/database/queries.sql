@@ -13,7 +13,7 @@ LIMIT 1;
 -- name: ListAllLinks :many
 SELECT * 
 FROM links
-ORDER BY created_at;
+ORDER BY created_at DESC;
 
 -- name: CreateLink :one
 INSERT INTO links (redirect, url, random) 

@@ -9,7 +9,7 @@
   <title>Breve</title>
 </svelte:head>
 
-<main class="font-roboto container">
+<main class="font-roboto container relative">
   <header class="my-3">
     <h1 class="font-bold text-2xl py-5"><a href="/">Breve - URL Shortner in Go and Svelte</a></h1>
     <a

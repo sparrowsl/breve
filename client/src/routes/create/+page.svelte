@@ -9,9 +9,14 @@
     const res = await fetch(`${PUBLIC_API_URL}/links`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(link),
+      body: JSON.stringify({
+        url: link?.url,
+        redirect: link?.redirect,
+        random: link?.random,
+      }),
     });
-    // const data = await res.json();
+    const data = await res.json();
+    console.log(data);
 
     if (res.ok) {
       goto("/");
@@ -38,8 +43,8 @@
     }
   }
 
-  const { data } = $props();
-  const link = data?.link;
+  export let data;
+  $: link = data?.link;
 </script>
 
 <form action="" onsubmit={submitForm} method="POST">
@@ -57,8 +62,9 @@
       type="text"
       placeholder="custom name"
       name="url"
+      disabled={link.random}
       bind:value={link.url}
-      class="block rounded-md text-sm"
+      class="block rounded-md text-sm disabled:cursor-not-allowed"
     />
     <label for="random" class="flex items-center gap-2 block w-fit">
       <input
@@ -71,7 +77,7 @@
       <span>Generate Random</span>
     </label>
 
-    {#if !link}
+    {#if link?.blank}
       <button
         type="submit"
         class="block text-sm text-white bg-teal-600 px-6 py-1 rounded-sm w-fit"

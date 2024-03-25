@@ -5,7 +5,7 @@ export async function load({ fetch, url }) {
   const id = Number(url.searchParams.get("update"))
 
   if (!id) {
-    return { link: {} }
+    return { link: { redirect: "", url: "", random: false, blank: true } }
   }
 
   try {
@@ -13,6 +13,6 @@ export async function load({ fetch, url }) {
     const data = await res.json()
     return { link: data.link }
   } catch (_) {
-    return { link: {} }
+    return { link: { redirect: "", url: "", random: false, blank: true } }
   }
 }

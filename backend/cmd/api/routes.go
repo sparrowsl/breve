@@ -26,6 +26,7 @@ func (app *application) routes() http.Handler {
 	router.Get("/links", app.getLinks)
 	router.Get("/links/{id}", app.getLink)
 	router.Post("/links", app.createLink)
+	router.Patch("/links/{id}", app.updateLink)
 	router.Delete("/links/{id}", app.deleteLink)
 
 	return router

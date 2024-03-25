@@ -84,7 +84,7 @@ func (app *application) createLink(writer http.ResponseWriter, request *http.Req
 
 		// generate random url with a size/length if request body random is set to true
 	if input.Random || strings.TrimSpace(input.Url) == "" {
-		input.Url = utils.RandomURL(6)
+		input.Url = utils.RandomURL()
 	}
 
 	if !validator.Valid() {
@@ -101,6 +101,68 @@ func (app *application) createLink(writer http.ResponseWriter, request *http.Req
 	})
 	if err != nil {
 		fmt.Fprintf(writer, "Error: %s\n", err)
+		return
+	}
+
+	// convert to json and return to user
+	value, err := json.Marshal(link)
+	if err != nil {
+		writer.Header().Set("Content-Type", "application/json")
+		writer.Write([]byte(err.Error()))
+		return
+	}
+
+	writer.Header().Set("Content-Type", "application/json")
+	writer.Write(value)
+}
+
+func (app *application) updateLink(writer http.ResponseWriter, request *http.Request) {
+	id, err := strconv.Atoi(chi.URLParam(request, "id"))
+	if err != nil {
+		fmt.Fprintf(writer, err.Error())
+		return
+	}
+
+	var input struct {
+		Redirect string `json:"redirect"`
+		Url      string `json:"url"`
+		Random   bool   `json:"random"`
+	}
+
+	decoder := json.NewDecoder(request.Body)
+	decoder.DisallowUnknownFields()
+
+	if err := decoder.Decode(&input); err != nil {
+		http.Error(writer, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	// validate the request body.
+	validator := valgo.
+		Is(valgo.String(input.Redirect, "redirect").Not().Blank()).
+		Is(valgo.String(input.Url, "url")).
+		Is(valgo.Bool(input.Random, "random").InSlice([]bool{true, false}))
+
+		// generate random url with a size/length if request body random is set to true
+	if input.Random || strings.TrimSpace(input.Url) == "" {
+		input.Url = utils.RandomURL()
+	}
+
+	if !validator.Valid() {
+		out, _ := json.Marshal(validator.Error())
+		writer.Header().Set("Content-Type", "application/json")
+		writer.Write(out)
+		return
+	}
+
+	link, err := app.db.UpdateLink(app.ctx, database.UpdateLinkParams{
+		Url:      input.Url,
+		Redirect: input.Redirect,
+		Random:   input.Random,
+		ID:       int32(id),
+	})
+	if err != nil {
+		fmt.Fprintf(writer, err.Error())
 		return
 	}
 

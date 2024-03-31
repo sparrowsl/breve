@@ -1,0 +1,40 @@
+version: "3.8"
+
+services:
+  web:
+    depends_on:
+      - api
+
+    build: ./client
+
+    ports:
+      - 5173:5173
+
+    environment:
+      PUBLIC_API_URL: http://localhost:5000
+
+  api:
+    depends_on:
+      - db
+
+    build: ./backend
+
+    ports:
+      - 5000:5000
+
+    environment:
+      DATABASE_URL: postgresql://postgres:password@localhost:5432/breve?sslmode=disable
+
+  db:
+    image: postgres
+    restart: always
+    shm_size: 128mb
+
+    environment:
+      POSTGRES_PASSWORD: password
+
+    volumes:
+      - breve:/var/lib/postgresql/data
+
+volumes:
+  breve:
